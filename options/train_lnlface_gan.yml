@@ -1,0 +1,172 @@
+
+# general settings
+name: train_lnlface_gan
+model_type: LNLFaceHiFaceGANModel
+scale: 1
+num_gpu: auto 
+manual_seed: 515
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: FFHQ
+    type: FFHQDegradationLandmarkDataset
+    dataroot_gt: /root/yanwd/dataset/FFHQ_512/
+    dataroot_mark: /root/yanwd/dataset/FFHQ_512_locations/
+    io_backend:
+      type: disk
+
+    use_hflip: true
+#    mean: [0.5, 0.5, 0.5]
+#    std: [0.5, 0.5, 0.5]
+    out_size: 512
+
+    blur_kernel_size: [19, 20]
+    kernel_list: ['iso', 'aniso']
+    kernel_prob: [0.5, 0.5]
+    blur_sigma: [0.1, 10]
+    downsample_range: [0.8, 8]
+    noise_range: [0, 20]
+    jpeg_range: [60, 100]
+
+    # color jitter and gray
+    color_jitter_prob: 0.3
+    color_jitter_shift: 20
+    color_jitter_pt_prob: 0.3
+    gray_prob: 0.01
+
+    # If you do not want colorization, please set
+    # color_jitter_prob: ~
+    # color_jitter_pt_prob: ~
+    # gray_prob: 0.01
+    # gt_gray: True
+
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 0
+    batch_size_per_gpu: 1
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val:
+    # Please modify accordingly to use your own validation
+    # Or comment the val block if do not need validation during training
+    name: validation
+    type: PairedImageMarkDataset
+    dataroot_lq: /root/yanwd/dataset/CelebA_test/degraded/
+    dataroot_mark: /root/yanwd/dataset/CelebA_test/degraded_locations/
+    dataroot_gt: /root/yanwd/dataset/CelebA_test/CelebA_HQ/validation_image/
+    io_backend:
+      type: disk
+#    mean: [0.5, 0.5, 0.5]
+#    std: [0.5, 0.5, 0.5]
+    scale: 1
+
+# network structures
+network_g:
+  type: LNLFaceNet
+
+network_d:
+  type: HiFaceGANDiscriminator
+  num_in_ch: 3
+  num_out_ch: 3
+  conditional_d: True
+  num_feat: 64
+  norm_d: 'spectralinstance'
+
+
+# path
+
+pretrain_network_init:
+  init: false
+
+path:
+  pretrain_network_g: /root/yanwd/projects/LNLFace/experiments/0813_train_lnlface_L1/models/net_g.pth
+  param_key_g: params
+  strict_load_g: false
+#  pretrain_network_d: ~
+#  resume_state: ~
+
+# training settings
+train:
+  optim_g:
+    type: Adam
+    lr: !!float 1e-4
+    betas: [ 0.9, 0.999 ]
+
+  optim_d:
+    type: Adam
+    lr: !!float 1e-4
+    weight_decay: 0
+    betas: [ 0.9, 0.999 ]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [80000, 120000, 160000, 200000, 250000]
+    gamma: 0.5
+
+  total_iter: 250000
+  warmup_iter: -1  # no warm up
+
+  # losses
+
+  perceptual_opt:
+    type: PerceptualLoss
+    # vgg_layer_indices: 2,7,12,21,30
+    # weights: 1/32, 1/16, 1/8, 1/4, 1
+    layer_weights:
+      'relu1_1': !!float 3.125e-2
+      'relu2_1': !!float 6.25e-2
+      'relu3_1': !!float 0.125
+      'relu4_1': !!float 0.25
+      'relu5_1': !!float 1.0
+    vgg_type: vgg19
+    use_input_norm: false # keep in [0,1] range
+    range_norm: false
+    perceptual_weight: !!float 10.0
+    style_weight: !!float 50.0
+    criterion: l1
+
+  gan_opt:
+    type: MultiScaleGANLoss
+    gan_type: lsgan
+    real_label_val: 1.0
+    fake_label_val: 0.0
+    loss_weight: !!float 1.0
+
+#  feature_matching_opt:
+#    type: GANFeatLoss
+#    loss_weight: !!float 10.0
+#s    criterion: l1
+
+  net_d_iters: 1
+  net_d_init_iters: 0
+
+
+# validation settings
+val:
+  val_freq: !!float 5e3
+  save_img: true
+
+  metrics:
+    psnr: # metric name
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+
+# logging settings
+logger:
+#  print_freq: 200
+  print_freq: 1000
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: false
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
+
+find_unused_parameters: true
