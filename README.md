@@ -1,7 +1,8 @@
-# LNLFace (Under Review)
+# LNLFace (ICASSP25)
 ---
 LNLFace: Enhanced Blind Face Restoration With Local and Non-local Lookups
 
+Paper (comming) | [Projtect](https://github.com/yanwd628/LNLFace)
 
 ## Dependencies
 + Python 3.6
@@ -22,6 +23,7 @@ LNLFace: Enhanced Blind Face Restoration With Local and Non-local Lookups
 
 **ps: the path configs should be changed to your own path**
 
+Our pretrained model is available [Google Drive](https://drive.google.com/file/d/1C27l1RdvUXdKCb1RVPbXy2ANo4nxCQGE/view?usp=sharing)
 
 
 
