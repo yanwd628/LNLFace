@@ -2,7 +2,7 @@
 ---
 LNLFace: Enhanced Blind Face Restoration With Local and Non-local Lookups
 
-Paper (comming) | [Projtect](https://github.com/yanwd628/LNLFace)
+[Paper](https://ieeexplore.ieee.org/document/10889799) | [Projtect](https://github.com/yanwd628/LNLFace)
 
 ## Dependencies
 + Python 3.6
@@ -25,5 +25,16 @@ Paper (comming) | [Projtect](https://github.com/yanwd628/LNLFace)
 
 Our pretrained model is available [Google Drive](https://drive.google.com/file/d/1C27l1RdvUXdKCb1RVPbXy2ANo4nxCQGE/view?usp=sharing)
 
-
+```
+@INPROCEEDINGS{10889799,
+  author={Yan, Weidan and Shao, Wenze and Zhang, Dengyin},
+  booktitle={ICASSP 2025 - 2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
+  title={LNLFace: Enhanced Blind Face Restoration With Local and Non-local Lookups}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-5},
+  keywords={Degradation;Codes;Dictionaries;Dams;Speech coding;Semantics;Signal processing;Image restoration;Speech processing;Faces;blind face restoration;component dictionaries;feature codebook;local and non-local},
+  doi={10.1109/ICASSP49660.2025.10889799}}
+```
 
